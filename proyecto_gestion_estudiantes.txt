@@ -1,27 +1,56 @@
-
 1. Introducción del Proyecto
-Este proyecto es un sistema de gestión de estudiantes para un instituto. Está desarrollado en Python, utilizando el conector MySQL para la base de datos, y un archivo CSV para almacenar información de los estudiantes añadidos a la base de datos. La aplicación permite añadir, eliminar, editar y mostrar estudiantes en la base de datos a través de una interfaz interactiva de consola. Los estudiantes tienen datos como nombre, apellido, curso y correo electrónico, y cada vez que se añaden se guardan tanto en la base de datos MySQL como en un archivo CSV llamado `bd.csv`.
+Este proyecto consiste en un sistema de gestión de estudiantes para un instituto. La aplicación permite añadir, eliminar, editar y mostrar estudiantes, así como gestionar su información en una base de datos MySQL. La base de datos utilizada se llama 'proyecto_di' y contiene tres tablas: alumnos, dam, y smr.
 
+---------------------------------------------------------------------------------------------------------------------------------------------
 2. Estructura del Proyecto
-El proyecto está compuesto por varios archivos Python, cada uno encargado de una parte distinta del sistema:
+El proyecto tiene la siguiente estructura de archivos:
 
-- `db_manager.py`: Maneja todas las operaciones relacionadas con la base de datos MySQL, incluyendo la adición, eliminación, edición y visualización de estudiantes. También se encarga de guardar los datos en el archivo CSV `bd.csv`.
-- `student.py`: Contiene la clase abstracta `Persona` y su clase hija `Estudiante`. `Persona` define los atributos básicos que cualquier persona debe tener, mientras que `Estudiante` hereda estos atributos y añade el curso.
-- `main.py`: Actúa como el controlador principal de la aplicación. Presenta un menú interactivo donde el usuario puede elegir qué acción realizar (añadir, eliminar, editar o mostrar estudiantes).
+main.py: Archivo principal que ejecuta la aplicación y gestiona la interacción con el usuario.
+db_connection.py: Contiene la clase DBConnection que se encarga de la conexión a la base de datos y de las operaciones básicas (añadir, eliminar, editar y mostrar estudiantes).
+student_manager.py: Contiene la clase StudentManager, que gestiona la información de los estudiantes y sus operaciones.
+git_manager.py: Contiene la función para subir el proyecto a GitHub.
 
-3. Pasos Seguidos para Conectar con la Base de Datos
-Para conectar con la base de datos MySQL en este proyecto, se han seguido los siguientes pasos:
-- Instalación de la librería `mysql-connector-python` para permitir que Python interactúe con la base de datos MySQL.
-- Creación de una base de datos llamada `gestorAlumnos` en MySQL.
-- Configuración de las credenciales de conexión (host, usuario, contraseña, nombre de la base de datos) en el archivo `db_manager.py`.
-- Uso de consultas SQL para realizar las distintas operaciones sobre la base de datos (INSERT, DELETE, UPDATE, SELECT).
+---------------------------------------------------------------------------------------------------------------------------------------------
+3. Pasos para Conectarse a la Base de Datos
+Para conectarme a la base de datos MySQL 'proyecto_di', he seguido los siguientes pasos:
 
+Instalé el paquete mysql-connector-python utilizando el comando pip install mysql-connector-python.
+En el archivo db_connection.py, configuré los parámetros de conexión (usuario, contraseña, host y nombre de la base de datos).
+Utilicé la clase DBConnection para establecer la conexión y realizar operaciones en la base de datos.
+
+---------------------------------------------------------------------------------------------------------------------------------------------
 4. Comandos Básicos de MySQL Usados
-A continuación, se detallan algunos de los comandos básicos de MySQL que se han utilizado en este proyecto:
-- `CREATE DATABASE gestorAlumnos;`: Crea una nueva base de datos llamada `gestorAlumnos`.
-- `CREATE TABLE estudiantes (id INT AUTO_INCREMENT PRIMARY KEY, nombre VARCHAR(100), apellido VARCHAR(100), curso VARCHAR(50), email VARCHAR(100));`: Crea una tabla `estudiantes` con columnas para almacenar el nombre, apellido, curso y correo electrónico de los estudiantes.
-- `INSERT INTO estudiantes (nombre, apellido, curso, email) VALUES (%s, %s, %s, %s);`: Inserta un nuevo estudiante en la tabla `estudiantes`.
-- `DELETE FROM estudiantes WHERE id = %s;`: Elimina un estudiante basado en su ID.
-- `UPDATE estudiantes SET nombre = %s, apellido = %s, curso = %s, email = %s WHERE id = %s;`: Actualiza los datos de un estudiante existente.
-- `SELECT * FROM estudiantes;`: Recupera todos los estudiantes almacenados en la base de datos.
-- `SELECT * FROM estudiantes WHERE curso = %s;`: Recupera los estudiantes que pertenecen a un curso específico.
+CREATE DATABASE proyecto_di: Crea una nueva base de datos llamada 'proyecto_di'.
+CREATE TABLE alumnos: Crea una tabla llamada 'alumnos' con los campos id, nombre, apellido, curso, edad, telefono, nota, nota_corte.
+CREATE TABLE dam: Crea una tabla llamada 'dam' con los campos id, nombre, apellido, nota.
+CREATE TABLE smr: Crea una tabla llamada 'smr' con los campos id, nombre, apellido, nota.
+INSERT INTO alumnos: Inserta un nuevo registro en la tabla 'alumnos'.
+SELECT * FROM alumnos: Muestra todos los registros de la tabla 'alumnos'.
+UPDATE alumnos SET: Actualiza un registro existente en la tabla 'alumnos'.
+DELETE FROM alumnos: Elimina un registro de la tabla 'alumnos'.
+
+---------------------------------------------------------------------------------------------------------------------------------------------
+5. Comandos para Crear un Repositorio y Subir el Proyecto
+Para crear un nuevo repositorio y subir el proyecto a GitHub, he seguido estos pasos:
+- Inicializar el repositorio: 
+    ```
+    git init
+    ```
+- Añadir todos los archivos al repositorio:
+    ```
+    git add .
+    ```
+- Hacer un commit con un mensaje:
+    ```
+    git commit -m "Initial commit"
+    ```
+- Crear un nuevo repositorio en GitHub desde la interfaz web.
+- Enlazar el repositorio local con el remoto:
+    ```
+    git remote add origin <URL_del_repositorio>
+    ```
+- Subir los cambios al repositorio remoto:
+    ```
+    git push -u origin master
+    ```
+

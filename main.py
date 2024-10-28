@@ -8,7 +8,8 @@ Created on Tue Oct 22 19:40:32 2024
 
 
 #%% 2. Importar modulos
-import mysql.connector
-from mysql.connector import Error
-
-
+from interfaz import Interfaz
+#%% 3. Codigo
+if __name__ == "__main__":
+    app = Interfaz()
+    app.run()
