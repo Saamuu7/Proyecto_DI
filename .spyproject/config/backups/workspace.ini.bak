@@ -4,7 +4,7 @@ save_data_on_exit = True
 save_history = True
 save_non_project_files = False
 project_type = 'empty-project-type'
-recent_files = ['api_nota_corte.py', 'gestion_db.py', 'gestion_estudiantes.py', 'main.py', 'subir_github.py', 'conexion_db.py']
+recent_files = ['api.py', 'db.py', 'interfaz.py', 'gestor_bd.py', 'main.py', 'subir_github.py']
 
 [main]
 version = 0.2.0

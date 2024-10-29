@@ -9,102 +9,211 @@ Created on Wed Oct 23 18:17:50 2024
 #%% 2. Importar módulos
 import tkinter as tk
 from tkinter import messagebox, simpledialog
-from usuario import Usuario
-from libro import LibroFisico
-from api_consumer import ApiConsumer
+from gestion_bd import BaseDeDatos 
 from subir_github import subir_a_github
 
 
 #%% 3. Código
 class Interfaz:
-    def __init__(self):
-        self.window = tk.Tk()
-        self.window.title("Gestión de Libros")
-        self.usuario = Usuario({
-            'host': 'localhost',
-            'user': 'root',  # Cambia esto
-            'password': 'samuel',  # Cambia esto
-            'database': 'proyecto_di'  # Cambia esto
-        })
+    def __init__(self, master):
+        self.master = master
+        self.master.title("Gestor de Libros")
+        self.conexion_db = BaseDeDatos()
+        self.conexion_db.conectar()
 
-        self.crear_menu()
+        self.libros_guardados = []
 
-    def crear_menu(self):
-        # Menú principal
-        self.menu = tk.Menu(self.window)
-        self.window.config(menu=self.menu)
+        self.label = tk.Label(master, text="Libros Disponibles:")
+        self.label.pack()
 
-        # Añadir opciones al menú
-        self.menu.add_command(label="Añadir Libro", command=self.añadir_libro)
-        self.menu.add_command(label="Editar Libro", command=self.editar_libro)
-        self.menu.add_command(label="Eliminar Libro", command=self.eliminar_libro)
-        self.menu.add_command(label="Mostrar Libros", command=self.mostrar_libros)
-        self.menu.add_command(label="Salir", command=self.salir)  # Opción para salir
+        # Crear un marco con scrollbar
+        self.frame_libros = tk.Frame(master)
+        self.frame_libros.pack()
 
-    def añadir_libro(self):
-        # Obtener datos del libro
-        titulo = simpledialog.askstring("Añadir Libro", "Introduce el título del libro:")
-        autor = simpledialog.askstring("Añadir Libro", "Introduce el autor del libro:")
-        isbn = simpledialog.askstring("Añadir Libro", "Introduce el ISBN del libro:")
+        self.lista_libros = tk.Listbox(self.frame_libros, width=50, height=20)
+        self.lista_libros.pack(side=tk.LEFT, fill=tk.BOTH)
 
-        if titulo and autor and isbn:
-            libro = LibroFisico(titulo, autor, isbn)
-            self.usuario.añadir_libro(libro.titulo, libro.autor, libro.isbn)
-            messagebox.showinfo("Éxito", "Libro añadido correctamente.")
-        else:
-            messagebox.showwarning("Advertencia", "Todos los campos son obligatorios.")
+        self.scrollbar = tk.Scrollbar(self.frame_libros)
+        self.scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 
-    def editar_libro(self):
-        # Obtener ID del libro a editar
-        id_libro = simpledialog.askinteger("Editar Libro", "Introduce el ID del libro a editar:")
-        if id_libro is None:
-            return
+        self.lista_libros.config(yscrollcommand=self.scrollbar.set)
+        self.scrollbar.config(command=self.lista_libros.yview)
 
-        # Obtener nuevos datos
-        nuevo_titulo = simpledialog.askstring("Editar Libro", "Introduce el nuevo título del libro:")
-        nuevo_autor = simpledialog.askstring("Editar Libro", "Introduce el nuevo autor del libro:")
-        nuevo_isbn = simpledialog.askstring("Editar Libro", "Introduce el nuevo ISBN del libro:")
+        self.boton_guardar = tk.Button(master, text="Guardar Libro (ID)", command=self.guardar_libro)
+        self.boton_guardar.pack()
 
-        if nuevo_titulo and nuevo_autor and nuevo_isbn:
-            self.usuario.editar_libro(id_libro, nuevo_titulo, nuevo_autor, nuevo_isbn)
-            messagebox.showinfo("Éxito", "Libro editado correctamente.")
-        else:
-            messagebox.showwarning("Advertencia", "Todos los campos son obligatorios.")
+        self.boton_borrar = tk.Button(master, text="Borrar Libro (ID)", command=self.borrar_libro)
+        self.boton_borrar.pack()
 
-    def eliminar_libro(self):
-        # Obtener ID del libro a eliminar
-        id_libro = simpledialog.askinteger("Eliminar Libro", "Introduce el ID del libro a eliminar:")
-        if id_libro is None:
-            return
+        self.boton_mostrar = tk.Button(master, text="Mostrar Guardados", command=self.mostrar_guardados)
+        self.boton_mostrar.pack()
 
-        self.usuario.eliminar_libro(id_libro)
-        messagebox.showinfo("Éxito", "Libro eliminado correctamente.")
+        self.boton_salir = tk.Button(master, text="Salir", command=self.salir)
+        self.boton_salir.pack()
 
-    def mostrar_libros(self):
-        libros = self.usuario.mostrar_libros()
-        if not libros:
-            messagebox.showinfo("Mostrar Libros", "No hay libros disponibles.")
-            return
+        self.mostrar_libros_api()
 
-        # Mostrar libros en un mensaje
-        mensaje = "Libros disponibles:\n\n"
+    def mostrar_libros_api(self):
+        # Aquí deberías hacer una petición a la API para obtener los libros
+        libros = [
+            {"id": 1, "isbn": "9780140449266", "titulo": "1984", "autor": "George Orwell"},
+            {"id": 2, "isbn": "9780743273565", "titulo": "El Gran Gatsby", "autor": "F. Scott Fitzgerald"},
+            {"id": 3, "isbn": "9780140449136", "titulo": "Orgullo y Prejuicio", "autor": "Jane Austen"},
+            {"id": 4, "isbn": "9780316769174", "titulo": "El Guardián Entre el Centeno", "autor": "J.D. Salinger"},
+            {"id": 5, "isbn": "9780307277671", "titulo": "El Código Da Vinci", "autor": "Dan Brown"},
+            {"id": 6, "isbn": "9780747532743", "titulo": "Harry Potter y la Piedra Filosofal", "autor": "J.K. Rowling"},
+            {"id": 7, "isbn": "9780307387899", "titulo": "Ángeles y Demonios", "autor": "Dan Brown"},
+            {"id": 8, "isbn": "9780061120084", "titulo": "Matar a un Ruiseñor", "autor": "Harper Lee"},
+            {"id": 9, "isbn": "9780451524935", "titulo": "Fahrenheit 451", "autor": "Ray Bradbury"},
+            {"id": 10, "isbn": "9780385472579", "titulo": "Cien Años de Soledad", "autor": "Gabriel García Márquez"},
+            {"id": 11, "isbn": "9781501128035", "titulo": "El Principito", "autor": "Antoine de Saint-Exupéry"},
+            {"id": 12, "isbn": "9780142437230", "titulo": "Moby Dick", "autor": "Herman Melville"},
+            {"id": 13, "isbn": "9780345816023", "titulo": "El Nombre del Viento", "autor": "Patrick Rothfuss"},
+            {"id": 14, "isbn": "9780140177398", "titulo": "El Alquimista", "autor": "Paulo Coelho"},
+            {"id": 15, "isbn": "9780140449181", "titulo": "Don Quijote de la Mancha", "autor": "Miguel de Cervantes"},
+            {"id": 16, "isbn": "9780553380163", "titulo": "Crónica de una Muerte Anunciada", "autor": "Gabriel García Márquez"},
+            {"id": 17, "isbn": "9780451526342", "titulo": "1984", "autor": "George Orwell"},
+            {"id": 18, "isbn": "9780374533557", "titulo": "La Metamorfosis", "autor": "Franz Kafka"},
+            {"id": 19, "isbn": "9780679783268", "titulo": "Los Miserables", "autor": "Victor Hugo"},
+            {"id": 20, "isbn": "9780141036144", "titulo": "La Divina Comedia", "autor": "Dante Alighieri"},
+            {"id": 21, "isbn": "9780525566019", "titulo": "Cumbres Borrascosas", "autor": "Emily Brontë"},
+            {"id": 22, "isbn": "9780316769488", "titulo": "Un Mundo Feliz", "autor": "Aldous Huxley"},
+            {"id": 23, "isbn": "9781593081160", "titulo": "El Retrato de Dorian Gray", "autor": "Oscar Wilde"},
+            {"id": 24, "isbn": "9780060850524", "titulo": "Ensayo sobre la Ceguera", "autor": "José Saramago"},
+            {"id": 25, "isbn": "9780141182537", "titulo": "Ulises", "autor": "James Joyce"},
+            {"id": 26, "isbn": "9781400079988", "titulo": "El Señor de los Anillos", "autor": "J.R.R. Tolkien"},
+            {"id": 27, "isbn": "9780451532084", "titulo": "Los Tres Mosqueteros", "autor": "Alexandre Dumas"},
+            {"id": 28, "isbn": "9788491052046", "titulo": "La Sombra del Viento", "autor": "Carlos Ruiz Zafón"},
+            {"id": 29, "isbn": "9780143105954", "titulo": "La Odisea", "autor": "Homero"},
+            {"id": 30, "isbn": "9780553573404", "titulo": "Juego de Tronos", "autor": "George R.R. Martin"},
+            {"id": 31, "isbn": "9780812971815", "titulo": "Los Pilares de la Tierra", "autor": "Ken Follett"},
+            {"id": 32, "isbn": "9780385121675", "titulo": "Cazadores de Sombras", "autor": "Cassandra Clare"},
+            {"id": 33, "isbn": "9780446310789", "titulo": "Lo Que el Viento se Llevó", "autor": "Margaret Mitchell"},
+            {"id": 34, "isbn": "9780345816023", "titulo": "Los Hombres que no Amaban a las Mujeres", "autor": "Stieg Larsson"},
+            {"id": 35, "isbn": "9780061122415", "titulo": "El Hobbit", "autor": "J.R.R. Tolkien"},
+            {"id": 36, "isbn": "9780307743657", "titulo": "El Amor en los Tiempos del Cólera", "autor": "Gabriel García Márquez"},
+            {"id": 37, "isbn": "9780140449228", "titulo": "Anna Karenina", "autor": "León Tolstói"},
+            {"id": 38, "isbn": "9780553381696", "titulo": "De Amor y de Sombra", "autor": "Isabel Allende"},
+            {"id": 39, "isbn": "9780143127741", "titulo": "Dune", "autor": "Frank Herbert"},
+            {"id": 40, "isbn": "9780141182537", "titulo": "La Naranja Mecánica", "autor": "Anthony Burgess"},
+            {"id": 41, "isbn": "9788497930737", "titulo": "La Reina del Sur", "autor": "Arturo Pérez-Reverte"},
+            {"id": 42, "isbn": "9780142437964", "titulo": "Robinson Crusoe", "autor": "Daniel Defoe"},
+            {"id": 43, "isbn": "9780143107644", "titulo": "El Conde de Montecristo", "autor": "Alexandre Dumas"},
+            {"id": 44, "isbn": "9780241345707", "titulo": "Hamlet", "autor": "William Shakespeare"},
+            {"id": 45, "isbn": "9780141192873", "titulo": "Cumbres Borrascosas", "autor": "Emily Brontë"},
+            {"id": 46, "isbn": "9780140449105", "titulo": "El Ingenioso Hidalgo Don Quijote de la Mancha", "autor": "Miguel de Cervantes"},
+            {"id": 47, "isbn": "9780316769532", "titulo": "Las Uvas de la Ira", "autor": "John Steinbeck"},
+            {"id": 48, "isbn": "9780141183053", "titulo": "La Casa de los Espíritus", "autor": "Isabel Allende"},
+            {"id": 49, "isbn": "9780374528379", "titulo": "Madame Bovary", "autor": "Gustave Flaubert"},
+            {"id": 50, "isbn": "9780553213568", "titulo": "La Guerra y la Paz", "autor": "León Tolstói"},
+            {"id": 51, "isbn": "9781400032716", "titulo": "Cien Años de Soledad", "autor": "Gabriel García Márquez"}
+        ]
         for libro in libros:
-            mensaje += f"ID: {libro[0]}, Título: {libro[1]}, Autor: {libro[2]}, ISBN: {libro[3]}\n"
+            self.lista_libros.insert(tk.END, f"{libro['id']}: {libro['titulo']} de {libro['autor']} (ISBN: {libro['isbn']})")
+
+
+    def guardar_libro(self):
+        id_libro = simpledialog.askinteger("Guardar Libro", "Introduce el ID del libro a guardar:")
         
-        messagebox.showinfo("Mostrar Libros", mensaje)
+        if id_libro is not None:
+            for i in range(self.lista_libros.size()):
+                libro = self.lista_libros.get(i)
+                if str(id_libro) in libro:
+                    libro_data = self.obtener_libro_por_id(id_libro)
+                    if libro_data:
+                        self.conexion_db.agregar_libro(libro_data)
+                        self.libros_guardados.append(libro_data)
+                        messagebox.showinfo("Éxito", f"Libro '{libro_data['titulo']}' guardado.")
+                    else:
+                        messagebox.showwarning("Advertencia", "Libro no encontrado.")
+                    return
+            
+            messagebox.showwarning("Advertencia", "ID de libro no encontrado en la lista.")
+            
+    def obtener_libro_por_id(self, id_libro):
+        libros = [
+            {"id": 1, "isbn": "9780140449266", "titulo": "1984", "autor": "George Orwell"},
+            {"id": 2, "isbn": "9780743273565", "titulo": "El Gran Gatsby", "autor": "F. Scott Fitzgerald"},
+            {"id": 3, "isbn": "9780140449136", "titulo": "Orgullo y Prejuicio", "autor": "Jane Austen"},
+            {"id": 4, "isbn": "9780316769174", "titulo": "El Guardián Entre el Centeno", "autor": "J.D. Salinger"},
+            {"id": 5, "isbn": "9780307277671", "titulo": "El Código Da Vinci", "autor": "Dan Brown"},
+            {"id": 6, "isbn": "9780747532743", "titulo": "Harry Potter y la Piedra Filosofal", "autor": "J.K. Rowling"},
+            {"id": 7, "isbn": "9780307387899", "titulo": "Ángeles y Demonios", "autor": "Dan Brown"},
+            {"id": 8, "isbn": "9780061120084", "titulo": "Matar a un Ruiseñor", "autor": "Harper Lee"},
+            {"id": 9, "isbn": "9780451524935", "titulo": "Fahrenheit 451", "autor": "Ray Bradbury"},
+            {"id": 10, "isbn": "9780385472579", "titulo": "Cien Años de Soledad", "autor": "Gabriel García Márquez"},
+            {"id": 11, "isbn": "9781501128035", "titulo": "El Principito", "autor": "Antoine de Saint-Exupéry"},
+            {"id": 12, "isbn": "9780142437230", "titulo": "Moby Dick", "autor": "Herman Melville"},
+            {"id": 13, "isbn": "9780345816023", "titulo": "El Nombre del Viento", "autor": "Patrick Rothfuss"},
+            {"id": 14, "isbn": "9780140177398", "titulo": "El Alquimista", "autor": "Paulo Coelho"},
+            {"id": 15, "isbn": "9780140449181", "titulo": "Don Quijote de la Mancha", "autor": "Miguel de Cervantes"},
+            {"id": 16, "isbn": "9780553380163", "titulo": "Crónica de una Muerte Anunciada", "autor": "Gabriel García Márquez"},
+            {"id": 17, "isbn": "9780451526342", "titulo": "1984", "autor": "George Orwell"},
+            {"id": 18, "isbn": "9780374533557", "titulo": "La Metamorfosis", "autor": "Franz Kafka"},
+            {"id": 19, "isbn": "9780679783268", "titulo": "Los Miserables", "autor": "Victor Hugo"},
+            {"id": 20, "isbn": "9780141036144", "titulo": "La Divina Comedia", "autor": "Dante Alighieri"},
+            {"id": 21, "isbn": "9780525566019", "titulo": "Cumbres Borrascosas", "autor": "Emily Brontë"},
+            {"id": 22, "isbn": "9780316769488", "titulo": "Un Mundo Feliz", "autor": "Aldous Huxley"},
+            {"id": 23, "isbn": "9781593081160", "titulo": "El Retrato de Dorian Gray", "autor": "Oscar Wilde"},
+            {"id": 24, "isbn": "9780060850524", "titulo": "Ensayo sobre la Ceguera", "autor": "José Saramago"},
+            {"id": 25, "isbn": "9780141182537", "titulo": "Ulises", "autor": "James Joyce"},
+            {"id": 26, "isbn": "9781400079988", "titulo": "El Señor de los Anillos", "autor": "J.R.R. Tolkien"},
+            {"id": 27, "isbn": "9780451532084", "titulo": "Los Tres Mosqueteros", "autor": "Alexandre Dumas"},
+            {"id": 28, "isbn": "9788491052046", "titulo": "La Sombra del Viento", "autor": "Carlos Ruiz Zafón"},
+            {"id": 29, "isbn": "9780143105954", "titulo": "La Odisea", "autor": "Homero"},
+            {"id": 30, "isbn": "9780553573404", "titulo": "Juego de Tronos", "autor": "George R.R. Martin"},
+            {"id": 31, "isbn": "9780812971815", "titulo": "Los Pilares de la Tierra", "autor": "Ken Follett"},
+            {"id": 32, "isbn": "9780385121675", "titulo": "Cazadores de Sombras", "autor": "Cassandra Clare"},
+            {"id": 33, "isbn": "9780446310789", "titulo": "Lo Que el Viento se Llevó", "autor": "Margaret Mitchell"},
+            {"id": 34, "isbn": "9780345816023", "titulo": "Los Hombres que no Amaban a las Mujeres", "autor": "Stieg Larsson"},
+            {"id": 35, "isbn": "9780061122415", "titulo": "El Hobbit", "autor": "J.R.R. Tolkien"},
+            {"id": 36, "isbn": "9780307743657", "titulo": "El Amor en los Tiempos del Cólera", "autor": "Gabriel García Márquez"},
+            {"id": 37, "isbn": "9780140449228", "titulo": "Anna Karenina", "autor": "León Tolstói"},
+            {"id": 38, "isbn": "9780553381696", "titulo": "De Amor y de Sombra", "autor": "Isabel Allende"},
+            {"id": 39, "isbn": "9780143127741", "titulo": "Dune", "autor": "Frank Herbert"},
+            {"id": 40, "isbn": "9780141182537", "titulo": "La Naranja Mecánica", "autor": "Anthony Burgess"},
+            {"id": 41, "isbn": "9788497930737", "titulo": "La Reina del Sur", "autor": "Arturo Pérez-Reverte"},
+            {"id": 42, "isbn": "9780142437964", "titulo": "Robinson Crusoe", "autor": "Daniel Defoe"},
+            {"id": 43, "isbn": "9780143107644", "titulo": "El Conde de Montecristo", "autor": "Alexandre Dumas"},
+            {"id": 44, "isbn": "9780241345707", "titulo": "Hamlet", "autor": "William Shakespeare"},
+            {"id": 45, "isbn": "9780141192873", "titulo": "Cumbres Borrascosas", "autor": "Emily Brontë"},
+            {"id": 46, "isbn": "9780140449105", "titulo": "El Ingenioso Hidalgo Don Quijote de la Mancha", "autor": "Miguel de Cervantes"},
+            {"id": 47, "isbn": "9780316769532", "titulo": "Las Uvas de la Ira", "autor": "John Steinbeck"},
+            {"id": 48, "isbn": "9780141183053", "titulo": "La Casa de los Espíritus", "autor": "Isabel Allende"},
+            {"id": 49, "isbn": "9780374528379", "titulo": "Madame Bovary", "autor": "Gustave Flaubert"},
+            {"id": 50, "isbn": "9780553213568", "titulo": "La Guerra y la Paz", "autor": "León Tolstói"},
+            {"id": 51, "isbn": "9781400032716", "titulo": "Cien Años de Soledad", "autor": "Gabriel García Márquez"}
+        ]
+        for libro in libros:
+            if libro["id"] == id_libro:
+                return libro
+        return None
+
+    def borrar_libro(self):
+        id_libro = simpledialog.askinteger("Borrar Libro", "Introduce el ID del libro a borrar:")
+        if id_libro is not None:
+            # Llamar a la función de borrar libro en la base de datos
+            self.conexion_db.borrar_libro(id_libro)
+            messagebox.showinfo("Éxito", f"Libro con ID {id_libro} borrado.")
+            self.actualizar_lista_libros()  # Actualizar la lista de libros después de borrar
+
+    def mostrar_guardados(self):
+        if self.libros_guardados:
+            libros_texto = "\n".join([f"{libro['titulo']} de {libro['autor']}" for libro in self.libros_guardados])
+            messagebox.showinfo("Libros Guardados", libros_texto)
+        else:
+            messagebox.showinfo("Libros Guardados", "No hay libros guardados.")
 
     def salir(self):
-        # Confirmar si el usuario desea salir
-        if messagebox.askyesno("Salir", "¿Estás seguro de que quieres salir?"):
-            try:
-                subir_a_github()  # Llamar a la función para subir a GitHub
-                self.window.destroy()  # Cerrar la ventana
-            except Exception as e:
-                messagebox.showerror("Error", f"No se pudo subir a GitHub: {e}")
-
-    def run(self):
-        self.window.mainloop()
+        # Llamar a la función para subir a GitHub
+        subir_a_github()
+        self.conexion_db.cerrar_conexion()
+        self.master.quit()
 
 if __name__ == "__main__":
-    app = Interfaz()
-    app.run()
+    root = tk.Tk()
+    app = Interfaz(root)
+    root.mainloop()
+
+
+
