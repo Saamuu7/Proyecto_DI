@@ -12,16 +12,16 @@ from abc import ABC, abstractmethod
 
 #%% 3. Código
 class Libro(ABC):
-    @abstractmethod
+    @abstractmethod()
     def mostrar_info(self):
         pass
-
+    
 class LibroSimple(Libro):
     def __init__(self, id, isbn, titulo, autor):
         self.id = id
         self.isbn = isbn
         self.titulo = titulo
         self.autor = autor
-
+        
     def mostrar_info(self):
-        return f"{self.id}: {self.titulo} de {self.autor} (ISBN: {self.isbn})"
+        return f"{self.id} : {self.titulo} de {self.autor} (ISBN: {self.isbm})"

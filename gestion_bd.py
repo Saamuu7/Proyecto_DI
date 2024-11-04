@@ -19,10 +19,10 @@ class BaseDeDatos:
     def conectar(self):
         try:
             self.conexion = mysql.connector.connect(
-                host='localhost',  # Cambia si es necesario
-                database='biblioteca',  # Cambia por tu base de datos
-                user='root',  # Cambia por tu usuario
-                password='samuel'  # Cambia por tu contraseña
+                host='localhost', 
+                database='biblioteca',  
+                user='root',
+                password='samuel'  
             )
             if self.conexion.is_connected():
                 print("Conexión exitosa a la base de datos.")
@@ -64,7 +64,5 @@ class BaseDeDatos:
             self.conexion.close()
             print("Conexión cerrada.")
             
-    def __init__(self):
-        self.conexion = None
 
    

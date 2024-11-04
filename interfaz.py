@@ -17,22 +17,21 @@ from subir_github import subir_a_github
 class Interfaz:
     def __init__(self, master):
         self.master = master
-        self.master.title("Gestor de Libros")
+        self.master.title("Biblioteca")
         self.conexion_db = BaseDeDatos()
         self.conexion_db.conectar()
-
+        
         self.libros_guardados = []
-
-        self.label = tk.Label(master, text="Libros Disponibles:")
+        self.label = tk.Label(master, text = "Libros disponibles")
         self.label.pack()
-
-        # Crear un marco con scrollbar
+        
+        #Marco con Scrollbar
         self.frame_libros = tk.Frame(master)
         self.frame_libros.pack()
-
-        self.lista_libros = tk.Listbox(self.frame_libros, width=50, height=20)
+        
+        self.lista_libros = tk.Listbox(self.frame_libros, width = 70, height = 20)
         self.lista_libros.pack(side=tk.LEFT, fill=tk.BOTH)
-
+        
         self.scrollbar = tk.Scrollbar(self.frame_libros)
         self.scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 
@@ -110,7 +109,7 @@ class Interfaz:
         ]
         for libro in libros:
             self.lista_libros.insert(tk.END, f"{libro['id']}: {libro['titulo']} de {libro['autor']} (ISBN: {libro['isbn']})")
-
+    
 
     def guardar_libro(self):
         id_libro = simpledialog.askinteger("Guardar Libro", "Introduce el ID del libro a guardar:")
@@ -191,18 +190,21 @@ class Interfaz:
 
     def borrar_libro(self):
         id_libro = simpledialog.askinteger("Borrar Libro", "Introduce el ID del libro a borrar:")
+        
         if id_libro is not None:
-            # Llamar a la función de borrar libro en la base de datos
-            self.conexion_db.borrar_libro(id_libro)
-            messagebox.showinfo("Éxito", f"Libro con ID {id_libro} borrado.")
-            self.actualizar_lista_libros()  # Actualizar la lista de libros después de borrar
+            for libro in self.libros_guardados:
+                if libro['id'] == id_libro:
+                    self.libros_guardados.remove(libro)
+                    self.conexion_db.borrar_libro(id_libro)  # Método que elimina el libro en la base de datos
+                    messagebox.showinfo("Éxito", f"Libro '{libro['titulo']}' borrado.")
+                    return
+    
+            messagebox.showwarning("Advertencia", "ID de libro no encontrado en la lista de guardados.")
 
     def mostrar_guardados(self):
-        if self.libros_guardados:
-            libros_texto = "\n".join([f"{libro['titulo']} de {libro['autor']}" for libro in self.libros_guardados])
-            messagebox.showinfo("Libros Guardados", libros_texto)
-        else:
-            messagebox.showinfo("Libros Guardados", "No hay libros guardados.")
+        self.lista_libros.delete(0, tk.END)  # Limpiar la lista antes de mostrar los guardados
+        for libro in self.libros_guardados:
+                self.lista_libros.insert(tk.END, f"{libro['id']}: {libro['titulo']} de {libro['autor']} (ISBN: {libro['isbn']})")
 
     def salir(self):
         # Llamar a la función para subir a GitHub
@@ -215,5 +217,25 @@ if __name__ == "__main__":
     app = Interfaz(root)
     root.mainloop()
 
-
-
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+    

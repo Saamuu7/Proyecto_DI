@@ -1,33 +1,35 @@
 1. Introducción del Proyecto
-Este proyecto consiste en un sistema de gestión de estudiantes para un instituto. La aplicación permite añadir, eliminar, editar y mostrar estudiantes, así como gestionar su información en una base de datos MySQL. La base de datos utilizada se llama 'proyecto_di' y contiene tres tablas: alumnos, dam, y smr.
+Este proyecto consiste en un sistema de gestión de libros de una biblioteca. La aplicación permite guardar libros (ID), eliminar libros (ID), mostrar libros guardados, así como gestionar su información en una base de datos MySQL. La base de datos utilizada se llama 'biblioteca' y contiene una tabla: libros.
+La aplicacion en termino general hace lo siguiente:
+- Abre una ventana donde se muestramn todos los libros que hay en la biblioteca yy te da la opcion de guardarte el libro, de eliminar los libros que tienes guardados y de mostrar los libros que tienes guardados. 
 
 ---------------------------------------------------------------------------------------------------------------------------------------------
 2. Estructura del Proyecto
 El proyecto tiene la siguiente estructura de archivos:
 
 main.py: Archivo principal que ejecuta la aplicación y gestiona la interacción con el usuario.
-db_connection.py: Contiene la clase DBConnection que se encarga de la conexión a la base de datos y de las operaciones básicas (añadir, eliminar, editar y mostrar estudiantes).
-student_manager.py: Contiene la clase StudentManager, que gestiona la información de los estudiantes y sus operaciones.
-git_manager.py: Contiene la función para subir el proyecto a GitHub.
+api_libros: Contiene la api creada por mi que contiene una lista de 50 libros con sus autores y sus isbn.
+gestion_bd.py: Contiene la clase DBConnection que se encarga de la conexión a la base de datos y de las operaciones básicas (añadir, eliminar y mostrar libros).
+gestor_libros.py: Contiene la clase abstracta y una clase normal de libros.
+interfaz.py: Contiene la parte grafica de la app
+subir_github: Contiene la funcion para que se suba el proyecto directamente a mi respositorio de github.
 
 ---------------------------------------------------------------------------------------------------------------------------------------------
 3. Pasos para Conectarse a la Base de Datos
-Para conectarme a la base de datos MySQL 'proyecto_di', he seguido los siguientes pasos:
+Para conectarme a la base de datos MySQL 'biblioteca', he seguido los siguientes pasos:
 
 Instalé el paquete mysql-connector-python utilizando el comando pip install mysql-connector-python.
-En el archivo db_connection.py, configuré los parámetros de conexión (usuario, contraseña, host y nombre de la base de datos).
-Utilicé la clase DBConnection para establecer la conexión y realizar operaciones en la base de datos.
+En el archivo gestion_bd.py, configuré los parámetros de conexión (usuario, contraseña, host y nombre de la base de datos).
+Utilicé la clase BaseDeDatos para establecer la conexión y realizar operaciones en la base de datos.
 
 ---------------------------------------------------------------------------------------------------------------------------------------------
 4. Comandos Básicos de MySQL Usados
-CREATE DATABASE proyecto_di: Crea una nueva base de datos llamada 'proyecto_di'.
-CREATE TABLE alumnos: Crea una tabla llamada 'alumnos' con los campos id, nombre, apellido, curso, edad, telefono, nota, nota_corte.
-CREATE TABLE dam: Crea una tabla llamada 'dam' con los campos id, nombre, apellido, nota.
-CREATE TABLE smr: Crea una tabla llamada 'smr' con los campos id, nombre, apellido, nota.
-INSERT INTO alumnos: Inserta un nuevo registro en la tabla 'alumnos'.
-SELECT * FROM alumnos: Muestra todos los registros de la tabla 'alumnos'.
-UPDATE alumnos SET: Actualiza un registro existente en la tabla 'alumnos'.
-DELETE FROM alumnos: Elimina un registro de la tabla 'alumnos'.
+CREATE DATABASE 'biblioteca': Crea una nueva base de datos llamada 'biblioteca'.
+CREATE TABLE 'libros': Crea una tabla llamada 'alumnos' con los campos id, titulo, autor, isbn.
+INSERT INTO 'biblioteca'': Inserta un nuevo registro en la tabla 'biblioteca'.
+SELECT * FROM 'biblioteca': Muestra todos los registros de la tabla 'biblioteca'.
+UPDATE 'biblioteca' SET: Actualiza un registro existente en la tabla 'biblioteca'.
+DELETE FROM 'biblioteca': Elimina un registro de la tabla 'biblioteca'.
 
 ---------------------------------------------------------------------------------------------------------------------------------------------
 5. Comandos para Crear un Repositorio y Subir el Proyecto
@@ -44,7 +46,6 @@ Para crear un nuevo repositorio y subir el proyecto a GitHub, he seguido estos p
     ```
     git commit -m "Initial commit"
     ```
-- Crear un nuevo repositorio en GitHub desde la interfaz web.
 - Enlazar el repositorio local con el remoto:
     ```
     git remote add origin <URL_del_repositorio>
